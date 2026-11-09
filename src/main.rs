@@ -63,7 +63,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("Logs from your program will appear here!");
 
     // TODO: Uncomment the lines below to pass the first stage
-    if let Some(content) = response["choices"][0]["message"]["content"].as_str() {
+    if let Some(content) = response["choices"][0]["message"]["tool_calls"].as_array() {
+        println!("tool calls array found!")
+    }else if let Some(context) = response["choices"][0]["message"]["content"].as_str() {
         println!("{}", content);
     }
 
