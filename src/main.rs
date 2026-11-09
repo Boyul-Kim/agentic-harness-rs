@@ -64,7 +64,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // TODO: Uncomment the lines below to pass the first stage
     if let Some(content) = response["choices"][0]["message"]["tool_calls"].as_array() {
-        println!("tool calls array found! {}", content)
+        println!("tool calls array found! {:?}", content)
     }else if let Some(content) = response["choices"][0]["message"]["content"].as_str() {
         println!("{}", content);
     }
