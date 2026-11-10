@@ -2,7 +2,6 @@ use async_openai::{Client, config::OpenAIConfig};
 use clap::{Error, Parser};
 use serde_json::{Value, json};
 use std::{env, process, string};
-use std::error::Error;
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -87,7 +86,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 // Extract data from tools_calls in response
-fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error>> {
+fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn clap::Error>> {
     let mut result = Vec::new();
     for tool in tool_calls {
         match tool.function.name.as_str() {
