@@ -2,6 +2,7 @@ use async_openai::{Client, config::OpenAIConfig};
 use clap::{Error, Parser};
 use serde_json::{Value, json};
 use std::{env, process, string};
+use std::error::Error;
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -11,14 +12,14 @@ struct Args {
 }
 
 struct ToolCall {
-    id: string,
-    tool_type: string,
+    id: String,
+    tool_type: String,
     function: Function,
 }
 
 struct Function {
-    name: string,
-    arguments: string,
+    name: String,
+    arguments: String,
 }
 
 #[tokio::main]
