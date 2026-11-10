@@ -1,13 +1,24 @@
 use async_openai::{Client, config::OpenAIConfig};
-use clap::Parser;
+use clap::{Error, Parser};
 use serde_json::{Value, json};
-use std::{env, process};
+use std::{env, process, string};
 
 #[derive(Parser)]
 #[command(author, version, about)]
 struct Args {
     #[arg(short = 'p', long)]
     prompt: String,
+}
+
+struct ToolCall {
+    id: string,
+    tool_type: string,
+    function: Function,
+}
+
+struct Function {
+    name: string,
+    arguments: string,
 }
 
 #[tokio::main]
@@ -65,9 +76,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Uncomment the lines below to pass the first stage
     if let Some(content) = response["choices"][0]["message"]["tool_calls"].as_array() {
         println!("tool calls array found! {:?}", content)
+
+
     }else if let Some(content) = response["choices"][0]["message"]["content"].as_str() {
         println!("{}", content);
     }
 
     Ok(())
+}
+
+// Extract data from tools_calls in response
+fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error>> {
+    let mut result = Vec::new();
+    for tool in tool_calls {
+        match tool.function.name.as_str() {
+            "Read" => {
+                let args: Value = serde_json::from_str(&tool.function.arguments)?;
+                let file_path = args["file_path"]
+                    .as_str()
+                    .ok_or("Read tool call missing \"file_path\"")?;
+
+                println!("TESTING {}", file_path);
+                result.push(file_path.to_string());
+            }
+
+            other => return Err(format!("Unrecognized tool: {other}").into()),
+        }
+    }
+
+    Ok(result)
 }
