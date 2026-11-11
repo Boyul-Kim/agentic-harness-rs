@@ -15,7 +15,7 @@ struct Args {
 #[derive(Deserialize)]
 struct ToolCall {
     id: String,
-    tool_type: String,
+    r#type: String,
     function: Function,
 }
 
