@@ -97,7 +97,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 // Extract data from tools_calls in response
 fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error>> {
     let mut result = Vec::new();
-    println!("TESTING 1");
     for tool in tool_calls {
         match tool.function.name.as_str() {
             "Read" => {
@@ -106,7 +105,6 @@ fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error
                     .as_str()
                     .ok_or("Read tool call missing \"file_path\"")?;
 
-                println!("TESTING {}", file_path);
                 result.push(file_path.to_string());
             }
 
