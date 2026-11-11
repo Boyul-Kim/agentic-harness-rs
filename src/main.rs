@@ -83,7 +83,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if message["tool_calls"].is_array() {
         let tool_calls: Vec<ToolCall> = serde_json::from_value(message["tool_calls"].clone())?;
         let paths = read_tool_calls(&tool_calls)?;
-        println!("path {:?}", paths);
+        println!("{}", paths);
     } else if let Some(content) = message["content"].as_str() {
         println!("{}", content);
     }
@@ -92,7 +92,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 }
 
 // Extract data from tools_calls in response
-fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error>> {
+fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<String, Box<dyn Error>> {
     let mut result = Vec::new();
     println!("TESTING 1");
     for tool in tool_calls {
@@ -113,8 +113,8 @@ fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error
 
     for file_path in &result {
         let contents = std::fs::read_to_string(file_path)?;
-        println!("{}", contents)
+        return Ok(content)
     } 
 
-    Ok(result)
+    Ok(Null)
 }
