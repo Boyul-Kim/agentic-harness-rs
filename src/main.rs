@@ -1,7 +1,9 @@
 use async_openai::{Client, config::OpenAIConfig};
-use clap::{Error, Parser};
+use clap::{Parser};
 use serde_json::{Value, json};
-use std::{env, process, string};
+use std::error::Error;
+use std::{env, process};
+use serde::Deserialize;
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -10,19 +12,21 @@ struct Args {
     prompt: String,
 }
 
+#[derive(Deserialize)]
 struct ToolCall {
     id: String,
     tool_type: String,
     function: Function,
 }
 
+#[derive(Deserialize)]
 struct Function {
     name: String,
     arguments: String,
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 
     let base_url = env::var("OPENROUTER_BASE_URL")
@@ -74,11 +78,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     eprintln!("Logs from your program will appear here!");
 
     // TODO: Uncomment the lines below to pass the first stage
-    if let Some(content) = response["choices"][0]["message"]["tool_calls"].as_array() {
-        println!("tool calls array found! {:?}", content)
+    let message = &response["choice"][0]["message"];
 
-
-    }else if let Some(content) = response["choices"][0]["message"]["content"].as_str() {
+    if message["tool_calls"].is_array() {
+        let tool_calls: Vec<ToolCall> = serde_json::from_value(message["tool_calls"].clone())?;
+        let paths = read_tool_calls(&tool_calls)?;
+        println!("{:?}", paths);
+    } else if let Some(content) = message["content"].as_str() {
         println!("{}", content);
     }
 
@@ -86,7 +92,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 // Extract data from tools_calls in response
-fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn clap::Error>> {
+fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error>> {
     let mut result = Vec::new();
     for tool in tool_calls {
         match tool.function.name.as_str() {
