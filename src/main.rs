@@ -78,7 +78,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     eprintln!("Logs from your program will appear here!");
 
     // TODO: Uncomment the lines below to pass the first stage
-    let message = &response["choice"][0]["message"];
+    let message = &response["choices"][0]["message"];
     println!("message {:?}", message);
     if message["tool_calls"].is_array() {
         let tool_calls: Vec<ToolCall> = serde_json::from_value(message["tool_calls"].clone())?;
