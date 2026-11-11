@@ -111,7 +111,7 @@ fn read_tool_calls(tool_calls: &[ToolCall]) -> Result<Vec<String>, Box<dyn Error
         }
     }
 
-    for file_path in results {
+    for file_path in result {
         let contents = std::fs::read_to_string(file_path)?;
         println!("{}", contents)
     } 
