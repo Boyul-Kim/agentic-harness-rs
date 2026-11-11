@@ -79,11 +79,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // TODO: Uncomment the lines below to pass the first stage
     let message = &response["choices"][0]["message"];
-    println!("message {:?}", message);
     if message["tool_calls"].is_array() {
         let tool_calls: Vec<ToolCall> = serde_json::from_value(message["tool_calls"].clone())?;
         let paths = read_tool_calls(&tool_calls)?;
-        println!("path {:?}", paths);
 
         for file_path in &paths {
             let contents = std::fs::read_to_string(file_path)?;
